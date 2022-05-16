@@ -64,6 +64,7 @@ int main() {
             if (ev.get_fd() == fd) {
                 // new socket to be accepted
                 auto client_fd = accept(fd, nullptr, nullptr);
+                eq.add(client_fd);
             } else {
                 char buf[80];
                 memset(buf, 0, 80);
@@ -71,6 +72,7 @@ int main() {
                     // client sent message.
                 } else {
                     // client disconnected.
+                    eq.remove(ev.get_fd());
                 }
             }
         }
