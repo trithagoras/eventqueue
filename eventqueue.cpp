@@ -5,11 +5,11 @@
 #include <unistd.h>
 
 namespace eq {
-#if defined(__APPLE__)
+#if defined(__KQUEUE__)
     Eq::Eq() {
         qfd = kqueue();
     }
-#elif defined(__linux__)
+#elif defined(__EPOLL__)
     Eq::Eq() {
         qfd = epoll_create1(0);
     }
@@ -19,7 +19,7 @@ namespace eq {
         return events;
     }
 
-#if defined(__APPLE__)
+#if defined(__KQUEUE__)
     void Eq::add(int fd) {
         if (contains(fd)) {
             char s[80];
@@ -35,7 +35,7 @@ namespace eq {
             throw std::invalid_argument(s);
         }
     }
-#elif defined(__linux__)
+#elif defined(__EPOLL__)
     void Eq::add(int fd) {
         if (contains(fd)) {
             char s[80];
@@ -75,7 +75,7 @@ namespace eq {
         }
     }
 
-#if defined(__APPLE__)
+#if defined(__KQUEUE__)
     std::vector<Event> Eq::listen() {
         auto new_events = kevent(qfd, nullptr, 0, event, events.size(), nullptr);
         if (new_events < 0) {
@@ -93,7 +93,7 @@ namespace eq {
 
         return new_evs;
     }
-#elif defined(__linux__)
+#elif defined(__EPOLL__)
     std::vector<Event> Eq::listen() {
         std::vector<Event> new_evs;
 

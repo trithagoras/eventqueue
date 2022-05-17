@@ -3,9 +3,15 @@
 
 #define MAX_EVENTS 64
 
-#if defined(__APPLE__)
+#if defined(__linux__)
+#   define __EPOLL__
+#elif defined(__APPLE__) || defined(__unix__) || defined(BSD) || defined(unix) || defined(__unix)
+#   define __KQUEUE__
+#endif
+
+#if defined(__KQUEUE__)
 #   include <sys/event.h>
-#elif defined(__linux__)
+#elif defined(__EPOLL__)
 #   include <sys/epoll.h>
 #endif
 
@@ -47,9 +53,9 @@ namespace eq {
     class Eq {
     private:
         std::vector<Event> events{};
-#       if defined(__APPLE__)
+#       if defined(__KQUEUE__)
             struct kevent change_event[MAX_EVENTS]{}, event[MAX_EVENTS]{};
-#       elif defined(__linux__)
+#       elif defined(__EPOLL__)
             struct epoll_event event[MAX_EVENTS];
 #       endif
         int qfd{};
