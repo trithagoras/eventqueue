@@ -61,8 +61,6 @@ namespace eq {
 #       endif
         int qfd{};
 
-        bool contains(int fd) const;
-        const Event &get_event_by_fd(int fd) const;
 
     public:
         /**
@@ -110,5 +108,16 @@ namespace eq {
          * a system call
          */
         std::vector<Event> listen();
+
+        /**
+         * Checks if the EQ is listening for this fd.
+         */
+        bool contains(int fd) const;
+
+        /**
+         * Gets the event belonging to this EQ with the specified fd.
+         * @throws std::invalid_exception if fd isn't being listened for.
+         */
+        const Event &get_event_by_fd(int fd) const;
     };
 }
